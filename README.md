@@ -38,7 +38,7 @@ The infrastructure for the solution is built upon Docker containers, providing a
    - **Description**: Offers a user interface for monitoring Kafka clusters and topics.
    - **Usage**: Provides developers with insights into Kafka cluster health, topic configuration, and message throughput.
 
-5. **Spark**:
+5. **Spark&Flink**:
    - **Description**: Acts as the Spark master node, managing the allocation of resources and scheduling tasks across the Spark cluster.
    - **Usage**: Enables real-time data processing and analytics, including complex event processing and machine learning.
 
@@ -65,6 +65,10 @@ The infrastructure for the solution is built upon Docker containers, providing a
 11. **pgAdmin4**:
    - **Description**: A useful tool for viewing SQL database data.
    - **Usage**: Provides a user friendly UI to help you navigate the PostgreSQL database, view and perform modifications to it.
+
+12. **Grafana**:
+   - **Description**: A useful tool for viewing and creating dashboards.
+   - **Usage**: The holy grail of dashboards, used for real time dashboards for the car.
 
 
 ### Development Environment Considerations
@@ -125,3 +129,8 @@ You can find all access passwords in the config.env file.
 # Issues
 
 apache-flink won't install for some reason, need to figure it out so i can run the example py file in examples with the flink cluster
+
+
+# Todo
+
+change build process for mlflow and rename dockerfile then test
