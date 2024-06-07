@@ -136,6 +136,14 @@ services:
     env_file:
       - ./config
 
+  # The holy grail of monitoring - with this we can have out real time graphs
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    networks:
+      - kafka-network
+    ports:
+      - "3000:3000"
 
 #  kafka-create-topic:
 #    image: ubuntu/kafka:3.6-22.04_edge

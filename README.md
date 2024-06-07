@@ -59,16 +59,20 @@ The infrastructure for the solution is built upon Docker containers, providing a
 
 
 
+# Deployment
+
+NOTE: To spin up the main stack, all you have to do is run ```./launchcommand.sh```
 
 
+NOTE: The rest of the instructions are for ML specific stuff, once I'm done building the main data pipeline I'll add ML tools so expect it to change. They are commented out in the compose file for now.
 
 # Machine Requirements
 
 At minimum, you need
 
- - 4vCPU
- - 16GB RAM
- - 32GB disk
+ - 2vCPU
+ - 8GB RAM
+ - 48GB disk
 
 # Passwords
 
