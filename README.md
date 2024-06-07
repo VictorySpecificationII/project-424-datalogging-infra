@@ -121,3 +121,7 @@ You can find all access passwords in the config.env file.
  - https://blog.min.io/setting-up-a-development-machine-with-mlflow-and-minio/
  - https://hub.docker.com/r/ubuntu/kafka
  - https://www.mlflow.org/docs/1.20.2/tutorials-and-examples/tutorial.html
+
+# Issues
+
+apache-flink won't install for some reason, need to figure it out so i can run the example py file in examples with the flink cluster
