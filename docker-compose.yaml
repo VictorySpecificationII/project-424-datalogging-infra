@@ -252,7 +252,19 @@ services:
       exit 0;
       "
 
-
+  s3_mlflow_createaccesskey:
+    container_name: mlflow_create_accesskey_job
+    image: minio/mc
+    depends_on:
+      - s3
+    networks:
+      - kafka-network
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set s3minio http://s3:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc admin user svcacct add --access-key "${MINIO_ACCESS_KEY}" --secret-key "${MINIO_SECRET_ACCESS_KEY}" --name mlflow --description connection s3minio ${MINIO_ROOT_USER};
+      exit 0;
+      "
 volumes:
   db_data:
   minio_data:
