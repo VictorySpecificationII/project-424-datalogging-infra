@@ -78,10 +78,7 @@ The infrastructure for the solution is built upon Docker containers, providing a
 
 # Deployment
 
-NOTE: To spin up the main stack, all you have to do is run ```./launchcommand.sh```
-
-
-NOTE: The rest of the instructions are for ML specific stuff, once I'm done building the main data pipeline I'll add ML tools so expect it to change. They are commented out in the compose file for now.
+IMPORTANT NOTE: this stack is PARTIALLY EPHEMERAL. If you're going to launch it and then tear it down, at least for the time being, EXPECT SOME DATA LOSS. I'm slowly working my way to add persistence (HDFS and Grafana are left I think).
 
 # Machine Requirements
 
@@ -108,23 +105,16 @@ You can find all access passwords in the config.env file.
 ## Launch this stack
 
  - Run ```./launchcommand.sh```
- - Login to localhost:9001 using the crendentials provided in the config.env file
- - Create an access key, copy and paste the secrets
- - Edit the config.env file, replace the access key and secret with the ones you created from step 3
- - Run ```docker stop mlflow_server```
- - Run ```docker rm mlflow_server```
- - Run ```./launchcommand.sh```
  - Open psql_servers.json, run ```docker inspect mlflow_db | grep IP```
  - Grab the IP of the db container, and add it to psql_servers.json
  - Restart the pgadmin4 service, you should be able to browse the db after that.
  - You can now run the example in the examples/ directory to view the run on MLFlow to verify functionality.
 
 # Remarks
- - If minio has no buckets after the first deployment, re-run the deployment again and they will be created. 
- - If you run into issues with MLFlow not showing the experiments, check the logs of MLflow - more often than not it will say invalid key or something along those lines. You have to delete mlflow and redeploy it
  - If you are running your model training on a host different than the host MLFlow is on, modify the example in the examples/ directory, just search for localhost:5000 and replace with the remote IP but keep the same port.
  - For the image currently being run for kafka, all utilities are in the /opt/kafka/bin/ directory.
- - The current server configuration is setup to automatically register any new topics if they don't exist.
+ - For the image currently being run for hadoop, hadoop home directory is in /opt/hadoop
+ - The current kafka server configuration is setup to automatically register any new topics if they don't exist.
 
 # Sources
 
