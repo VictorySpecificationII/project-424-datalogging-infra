@@ -129,3 +129,10 @@ You can find all access passwords in the config.env file.
 # Issues
 
 apache-flink won't install for some reason, need to figure it out so i can run the example py file in examples with the flink cluster
+
+
+# Todo
+
+[x] modified build for MLFlow container
+[x] Fixed Kafka advertised listeners issue
+[ ] Rename files properly (i.e psql_servers, server.properties, config etc) to make things more readable
