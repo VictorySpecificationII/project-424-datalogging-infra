@@ -178,8 +178,9 @@ services:
    # MLFlow Tracking Server to track experiments for ML
   tracking_server:
     restart: always
-    build: .
-    image: mlflow_server
+    build:
+      context: .
+      dockerfile: mlflowDockerfile
     container_name: mlflow_server
     depends_on:
       - db
