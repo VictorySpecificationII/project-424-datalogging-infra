@@ -12,3 +12,20 @@ sed -i "s/advertised.listeners=PLAINTEXT:\/\/localhost:9092/advertised.listeners
 echo "Updated kafka-server.properties file with machine's IP address: $machine_ip"
 
 docker-compose --env-file toolchain-config.env up -d --build
+
+# Obtain the IPv4 address of the Docker container
+ipv4_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mlflow_db)
+
+# Replace the "Host" value in the JSON file with the obtained IPv4 address
+jq --arg ipv4 "$ipv4_address" '.Servers."1".Host = $ipv4' pgadmin4_psql_servers.json > tmp_pgadmin4_psql_servers.json
+
+# Replace the original file with the updated one
+mv tmp_pgadmin4_psql_servers.json pgadmin4_psql_servers.json
+
+echo "Updated pgadmin4_psql_servers.json file with mlflow_db container's IP address: $ipv4_address"
+
+docker stop pgadmin4
+
+docker rm pgadmin4
+
+docker-compose --env-file toolchain-config.env up -d pgadmin4

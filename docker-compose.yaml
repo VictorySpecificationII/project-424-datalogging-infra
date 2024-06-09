@@ -238,7 +238,7 @@ services:
     ports:
       - "${PGADMIN4_PORT}:80"
     volumes:
-      - ./psql_servers.json:/pgadmin4/servers.json
+      - ./pgadmin4_psql_servers.json:/pgadmin4/servers.json
 
   # S3 storage for MLFlow
   s3:
