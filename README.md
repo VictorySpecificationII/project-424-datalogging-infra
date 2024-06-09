@@ -134,3 +134,5 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 [x] Fixed Kafka advertised listeners issue
 
 [x] Rename files properly (i.e psql_servers, server.properties, config etc) to make things more readable
+
+[ ] Parameterize the rest of the stack and add to toolchain-config.env
