@@ -109,10 +109,6 @@ You can find all access passwords in the config.env file.
 ## Launch this stack
 
  - Run ```./launchcommand.sh```
- - Open psql_servers.json, run ```docker inspect mlflow_db | grep IP```
- - Grab the IP of the db container, and add it to psql_servers.json
- - Restart the pgadmin4 service, you should be able to browse the db after that.
- - You can now run the example in the examples/ directory to view the run on MLFlow to verify functionality.
 
 # Remarks
  - If you are running your model training on a host different than the host MLFlow is on, modify the example in the examples/ directory, just search for localhost:5000 and replace with the remote IP but keep the same port.
@@ -134,5 +130,7 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 # Todo
 
 [x] modified build for MLFlow container
+
 [x] Fixed Kafka advertised listeners issue
-[ ] Rename files properly (i.e psql_servers, server.properties, config etc) to make things more readable
+
+[x] Rename files properly (i.e psql_servers, server.properties, config etc) to make things more readable
