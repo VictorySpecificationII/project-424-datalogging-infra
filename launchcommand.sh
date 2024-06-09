@@ -11,4 +11,4 @@ sed -i "s/advertised.listeners=PLAINTEXT:\/\/localhost:9092/advertised.listeners
 
 echo "Updated kafka-server.properties file with machine's IP address: $machine_ip"
 
-docker-compose --env-file config.env up -d --build
+docker-compose --env-file toolchain-config.env up -d --build
