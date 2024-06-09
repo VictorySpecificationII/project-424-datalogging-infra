@@ -64,7 +64,8 @@ services:
     networks:
       - kafka-network
     ports:
-      - "8082:8081"
+      - "${SPARK_UI_PORT}:8081"
+      - "${SPARK_RPC_PORT_JOBMANAGER}:6123"
     command: jobmanager
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
@@ -77,6 +78,9 @@ services:
     networks:
       - kafka-network
     command: taskmanager
+    ports:
+      - "${SPARK_RPC_PORT_TASKMANAGER}:6122"
+      - "${SPARK_DATA_PORT_TASKMANAGER}:6121"
     environment:
       - JOB_MANAGER_RPC_ADDRESS=flink-jobmanager
     depends_on:
