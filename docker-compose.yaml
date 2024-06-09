@@ -129,7 +129,7 @@ services:
     ports:
       - 9870:9870
     env_file:
-      - ./config
+      - ./hadoop-config.env
     environment:
       ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
 
@@ -140,7 +140,7 @@ services:
     container_name: hadoop-datanode
     command: ["hdfs", "datanode"]
     env_file:
-      - ./config
+      - ./hadoop-config.env
 
   # Manages resources in the YARN (Yet Another Resource Negotiator) cluster, allocating resources to applications.
   resourcemanager:
@@ -151,7 +151,7 @@ services:
     ports:
        - 8089:8088
     env_file:
-      - ./config
+      - ./hadoop-config.env
     volumes:
       - ./test.sh:/opt/test.sh
 
@@ -161,7 +161,7 @@ services:
     container_name: hadoop-nodemanager
     command: ["yarn", "nodemanager"]
     env_file:
-      - ./config
+      - ./hadoop-config.env
 
   # The holy grail of monitoring - with this we can have out real time graphs
   grafana:
