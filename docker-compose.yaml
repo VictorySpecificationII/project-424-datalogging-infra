@@ -36,7 +36,7 @@ services:
     ports:
       - "${KAFKA_PORT}:9092"
     volumes:
-      - ./server.properties:/etc/kafka/server.properties
+      - ./kafka-server.properties:/etc/kafka/server.properties
     depends_on:
       - zookeeper
 
