@@ -172,8 +172,8 @@ services:
        - 8089:8088
     env_file:
       - ./hadoop-config.env
-    volumes:
-      - ./test.sh:/opt/test.sh
+#    volumes:
+#      - ./test.sh:/opt/test.sh
 
   # Manages resources and executes tasks on individual nodes in the YARN cluster.
   nodemanager:
@@ -239,7 +239,7 @@ services:
       - POSTGRES_PASSWORD=${PG_PASSWORD}
       - POSTGRES_DATABASE=${PG_DATABASE}
     volumes:
-      - ./db_data:/var/lib/postgresql/data/
+      - db_data:/var/lib/postgresql/data/
     healthcheck:
       test: ["CMD", "pg_isready", "-p", "${PG_PORT}", "-U", "${PG_USER}"]
       interval: 5s
@@ -266,7 +266,7 @@ services:
     image: minio/minio:latest
     container_name: mlflow_minio
     volumes:
-      - ./minio_data:/data
+      - minio_data:/data
     ports:
       - "${MINIO_PORT}:9000"
       - "${MINIO_CONSOLE_PORT}:9001"
