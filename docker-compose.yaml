@@ -19,7 +19,7 @@ services:
     networks:
       - kafka-network
     ports:
-      - "9123:9000"
+      - "${ZOONAVIGATOR_UI_PORT}:9000"
     environment:
       HTTP_PORT: 9000
       CONNECTION_LOCALZK_NAME: "Local ZooKeeper"
@@ -125,11 +125,11 @@ services:
       - hbase_data:/data/hbase
     ports:
      # - "2181:2181" #Zookeeper port, no need for it as we connect hbase to an external zookeeper
-      - "8080:8080" # REST api port, can interact with hbase api through here
-      - "16000:16000" # hbase master port
-      - "16010:16010" # UI port
-      - "16020:16020" # regionserver port, used by hbase region servers for handling read and write requests from clients.
-      - "16030:16030" # regionserver ui port
+      - "${HBASE_REST_API_PORT}:8080" # REST api port, can interact with hbase api through here
+      - "${HBASE_MASTER_PORT}:16000" # hbase master port
+      - "${HBASE_UI_PORT}:16010" # UI port
+      - "${HBASE_REGIONSERVER_PORT}:16020" # regionserver port, used by hbase region servers for handling read and write requests from clients.
+      - "${HBASE_REGIONSERVER_UI_PORT}:16030" # regionserver ui port
     environment:
       - HBASE_ZOOKEEPER_QUORUM=zookeeper
       - HBASE_ZOOKEEPER_CLIENT_PORT=2181
@@ -148,7 +148,7 @@ services:
     hostname: namenode
     command: ["hdfs", "namenode"]
     ports:
-      - 9870:9870
+      - "${HDFS_NAMENODE_UI_PORT}:9870"
     env_file:
       - ./hadoop-config.env
     environment:
@@ -170,7 +170,7 @@ services:
     hostname: resourcemanager
     command: ["yarn", "resourcemanager"]
     ports:
-       - 8089:8088
+       - "${HADOOP_RESOURCEMANAGER_UI_PORT}:8088"
     env_file:
       - ./hadoop-config.env
 #    volumes:
@@ -191,7 +191,7 @@ services:
     networks:
       - kafka-network
     ports:
-      - "3000:3000"
+      - "${GRAFANA_UI_PORT}:3000"
 
 
  # Machine Learning Tools
