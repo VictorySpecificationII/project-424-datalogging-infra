@@ -87,16 +87,32 @@ services:
       - flink-jobmanager
 
   # Acts as the Spark master node, managing the allocation of resources and scheduling tasks across the Spark cluster.
-  spark:
+
+  spark-master:
     image: bitnami/spark
-    container_name: spark
+    container_name: spark-master
     environment:
       - SPARK_MODE=master
     networks:
       - kafka-network
     ports:
-      - "8088:8080"  # Spark UI
-      - "7078:7077"  # Spark Master
+      - "${SPARK_UI_PORT}:8080"  # Spark UI
+      - "${SPARK_MASTER_PORT}:7077"  # Spark Master
+    volumes:
+      - spark-logs:/opt/spark/logs
+
+  spark-worker:
+    image: bitnami/spark
+    container_name: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    networks:
+      - kafka-network
+    depends_on:
+      - spark-master
+    volumes:
+      - spark-logs:/opt/spark/logs
 
   # A distributed NoSQL database that provides real-time read/write access to large datasets, often used for random, real-time access to big data.
   hbase:
@@ -301,3 +317,4 @@ services:
 volumes:
   db_data:
   minio_data:
+  spark-logs:

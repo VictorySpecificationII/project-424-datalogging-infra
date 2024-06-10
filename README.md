@@ -122,6 +122,8 @@ You can find all access passwords in the config.env file.
  - https://hub.docker.com/r/ubuntu/kafka
  - https://www.mlflow.org/docs/1.20.2/tutorials-and-examples/tutorial.html
  - https://github.com/databricks/mlops-stacks/blob/main/doc-images/mlops-stack-summary.png
+ - https://hub.docker.com/r/bitnami/spark
+ - https://hub.docker.com/r/apache/spark
 # Issues
 
 apache-flink won't install for some reason, need to figure it out so i can run the example py file in examples with the flink cluster
