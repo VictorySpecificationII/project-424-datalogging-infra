@@ -192,7 +192,12 @@ services:
       - kafka-network
     ports:
       - "${GRAFANA_UI_PORT}:3000"
-
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
+    volumes:
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
 
  # Machine Learning Tools
 
