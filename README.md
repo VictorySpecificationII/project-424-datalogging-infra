@@ -140,7 +140,7 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 
 [x] Parameterize the rest of the stack and add to toolchain-config.env
 
-[ ] Add named volumes to Grafana to establish persistence
+[x] Add named volumes to Grafana to establish persistence
 
 [x] Add named volumes to HBase to establish persistence
 
