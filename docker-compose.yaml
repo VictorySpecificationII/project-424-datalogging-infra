@@ -122,13 +122,14 @@ services:
       - kafka-network
     volumes:
       - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml  # Mount custom configuration directory
+      - hbase_data:/data/hbase
     ports:
-      - "2181:2181"
-      - "8080:8080"
-      - "16000:16000"
+     # - "2181:2181" #Zookeeper port, no need for it as we connect hbase to an external zookeeper
+      - "8080:8080" # REST api port, can interact with hbase api through here
+      - "16000:16000" # hbase master port
       - "16010:16010" # UI port
-      - "16020:16020"
-      - "16030:16030"
+      - "16020:16020" # regionserver port, used by hbase region servers for handling read and write requests from clients.
+      - "16030:16030" # regionserver ui port
     environment:
       - HBASE_ZOOKEEPER_QUORUM=zookeeper
       - HBASE_ZOOKEEPER_CLIENT_PORT=2181
@@ -318,3 +319,4 @@ volumes:
   db_data:
   minio_data:
   spark-logs:
+  hbase_data:

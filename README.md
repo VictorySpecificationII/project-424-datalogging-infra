@@ -124,6 +124,7 @@ You can find all access passwords in the config.env file.
  - https://github.com/databricks/mlops-stacks/blob/main/doc-images/mlops-stack-summary.png
  - https://hub.docker.com/r/bitnami/spark
  - https://hub.docker.com/r/apache/spark
+ - https://github.com/hyness/hbase-rest-standalone
 # Issues
 
 apache-flink won't install for some reason, need to figure it out so i can run the example py file in examples with the flink cluster
@@ -142,6 +143,8 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 [ ] Add named volumes to HDFS to establish persistence
 
 [ ] Add named volumes to Grafana to establish persistence
+
+[x] Add named volumes to HBase to establish persistence
 
 [ ] Connect Flink with HDFS
 
