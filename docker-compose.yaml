@@ -357,7 +357,7 @@ services:
       - MLFLOW_S3_IGNORE_TLS=true
     command: >
       mlflow server
-      --backend-store-uri postgresql://${PG_USER}:${PG_PASSWORD}@mlflow_db:${PG_PORT}/${PG_DATABASE}
+      --backend-store-uri postgresql://${MLFLOW_PG_USER}:${MLFLOW_PG_PASSWORD}@mlflow_db:${MLFLOW_PG_PORT}/${MLFLOW_PG_DATABASE}
       --host 0.0.0.0
       --serve-artifacts
       --artifacts-destination s3://${MLFLOW_BUCKET_NAME}
@@ -372,17 +372,17 @@ services:
     image: postgres
     container_name: mlflow_db
     expose:
-      - "${PG_PORT}"
+      - "${MLFLOW_PG_PORT}"
     networks:
       - kafka-network
     environment:
-      - POSTGRES_USER=${PG_USER}
-      - POSTGRES_PASSWORD=${PG_PASSWORD}
-      - POSTGRES_DATABASE=${PG_DATABASE}
+      - POSTGRES_USER=${MLFLOW_PG_USER}
+      - POSTGRES_PASSWORD=${MLFLOW_PG_PASSWORD}
+      - POSTGRES_DATABASE=${MLFLOW_PG_DATABASE}
     volumes:
       - mlflow_db_data:/var/lib/postgresql/data/
     healthcheck:
-      test: ["CMD", "pg_isready", "-p", "${PG_PORT}", "-U", "${PG_USER}"]
+      test: ["CMD", "pg_isready", "-p", "${MLFLOW_PG_PORT}", "-U", "${MLFLOW_PG_USER}"]
       interval: 5s
       timeout: 5s
       retries: 3
