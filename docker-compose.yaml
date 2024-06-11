@@ -229,6 +229,7 @@ services:
 
   airflow_postgres:
     image: postgres
+    container_name: airflow_postgres
     environment:
       - POSTGRES_USER=${AIRFLOW_DB_USER}
       - POSTGRES_PASSWORD=${AIRFLOW_DB_PASS}
