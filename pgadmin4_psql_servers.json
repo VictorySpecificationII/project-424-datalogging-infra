@@ -3,7 +3,7 @@
     "1": {
       "Name": "mflow_psql-docker",
       "Group": "Servers",
-      "Host": "172.28.0.6",
+      "Host": "172.18.0.3",
       "Port": 5432,
       "MaintenanceDB": "mlflow",
       "Username": "mlflow",

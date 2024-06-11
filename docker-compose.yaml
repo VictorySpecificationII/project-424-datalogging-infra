@@ -141,48 +141,48 @@ services:
   # NOTE: HDFS is the primary storage layer in the Hadoop ecosystem, providing distributed storage for large-scale data processing. 
   # NOTE: So, you don't need to separately install HDFS when setting up a Hadoop cluster; it comes bundled with the Hadoop distribution.
 
-  # Manages the filesystem namespace and metadata for HDFS (Hadoop Distributed File System). HDFS + Hadoop are bundled together in this container
-  namenode:
-    image: apache/hadoop:3
-    container_name: hadoop-namenode
-    hostname: namenode
-    command: ["hdfs", "namenode"]
-    ports:
-      - "${HDFS_NAMENODE_UI_PORT}:9870"
-    env_file:
-      - ./hadoop-config.env
-    environment:
-      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
+  # Manages the filesystem namespace and metadata for HDFS (Hadoop Distributed File System). HDFS Component
+#  namenode:
+#    image: apache/hadoop:3
+#    container_name: hadoop-namenode
+#    hostname: namenode
+#    command: ["hdfs", "namenode"]
+#    ports:
+#      - "${HDFS_NAMENODE_UI_PORT}:9870"
+#    env_file:
+#      - ./hadoop-config.env
+#    environment:
+#      ENSURE_NAMENODE_DIR: "/tmp/hadoop-root/dfs/name"
 
 
-  # Stores actual data blocks and serves read and write requests from clients in HDFS. HDFS + Hadoop are bundled together in this container
-  datanode:
-    image: apache/hadoop:3
-    container_name: hadoop-datanode
-    command: ["hdfs", "datanode"]
-    env_file:
-      - ./hadoop-config.env
+  # Stores actual data blocks and serves read and write requests from clients in HDFS. HDFS Component
+#  datanode:
+#    image: apache/hadoop:3
+#    container_name: hadoop-datanode
+#    command: ["hdfs", "datanode"]
+#    env_file:
+#      - ./hadoop-config.env
 
   # Manages resources in the YARN (Yet Another Resource Negotiator) cluster, allocating resources to applications.
-  resourcemanager:
-    image: apache/hadoop:3
-    container_name: hadoop-resourcemanager
-    hostname: resourcemanager
-    command: ["yarn", "resourcemanager"]
-    ports:
-       - "${HADOOP_RESOURCEMANAGER_UI_PORT}:8088"
-    env_file:
-      - ./hadoop-config.env
+#  resourcemanager:
+#    image: apache/hadoop:3
+#    container_name: hadoop-resourcemanager
+#    hostname: resourcemanager
+#    command: ["yarn", "resourcemanager"]
+#    ports:
+#       - "${HADOOP_RESOURCEMANAGER_UI_PORT}:8088"
+#    env_file:
+#      - ./hadoop-config.env
 #    volumes:
 #      - ./test.sh:/opt/test.sh
 
   # Manages resources and executes tasks on individual nodes in the YARN cluster.
-  nodemanager:
-    image: apache/hadoop:3
-    container_name: hadoop-nodemanager
-    command: ["yarn", "nodemanager"]
-    env_file:
-      - ./hadoop-config.env
+#  nodemanager:
+#    image: apache/hadoop:3
+#    container_name: hadoop-nodemanager
+#    command: ["yarn", "nodemanager"]
+#    env_file:
+#      - ./hadoop-config.env
 
   # The holy grail of monitoring - with this we can have out real time graphs
   grafana:

@@ -144,6 +144,6 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 
 [x] Add named volumes to HBase to establish persistence
 
-[ ] Connect Flink with HDFS
+[ ] Connect Flink with S3
 
-[ ] Connect Kafka with HDFS
+[ ] Connect Kafka with S3
