@@ -4,6 +4,26 @@ networks:
   kafka-network:
     driver: bridge
 
+x-airflow-common:
+  &airflow-common
+  image: apache/airflow:2.0.0
+  environment:
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${AIRFLOW_DB_USER}:${AIRFLOW_DB_PASS}@airflow_postgres:5432/${AIRFLOW_DB_NAME}
+    - AIRFLOW__CORE__FERNET_KEY=FB0o_zt4e3Ziq3LdUUO7F2Z95cvFFx16hU8jTeR1ASM=
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW__CORE__LOGGING_LEVEL=INFO
+  volumes:
+    - airflow-dags:/opt/airflow/dags
+    - airflow-logs:/opt/airflow/logs
+    - airflow-plugins:/opt/airflow/plugins
+    - ./airflow-config.cfg:/opt/airlfow/airflow.cfg
+  depends_on:
+    - airflow_postgres
+  networks:
+    - kafka-network
+
+
 services:
 
   # Responsible for coordination and synchronization between distributed systems, such as Kafka and HBase.
@@ -207,6 +227,46 @@ services:
       - ./ozone-site.xml:/opt/hadoop/etc/hadoop/ozone-site.xml
 
 
+  airflow_postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=${AIRFLOW_DB_USER}
+      - POSTGRES_PASSWORD=${AIRFLOW_DB_PASS}
+      - POSTGRES_DB=${AIRFLOW_DB_NAME}
+      - POSTGRES_PORT=5432
+    networks:
+      - kafka-network
+
+  airflow-init:
+    << : *airflow-common
+    container_name: airflow_init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - airflow users list || ( airflow db init &&
+        airflow users create
+          --role Admin
+          --username ${AIRFLOW_ADMIN_USERNAME}
+          --password ${AIRFLOW_ADMIN_PASSWORD}
+          --email ${AIRFLOW_ADMIN_EMAIL}
+          --firstname ${AIRFLOW_ADMIN_FIRSTNAME}
+          --lastname ${AIRFLOW_ADMIN_LASTNAME} )
+    restart: on-failure
+
+  airflow-webserver:
+    << : *airflow-common
+    command: airflow webserver
+    ports:
+      - "${AIRFLOW_PORT}:8080"
+    container_name: airflow_webserver
+    restart: always
+
+  airflow-scheduler:
+    << : *airflow-common
+    command: airflow scheduler
+    container_name: airflow_scheduler
+    restart: always
+
 
   # Apache Hadoop Section (HDFS deprecated in favor of Ozone, todo - switch YARN cluster to Ozone at some point if needed)
 
@@ -399,3 +459,6 @@ volumes:
   minio_data:
   spark-logs:
   hbase_data:
+  airflow-dags:
+  airflow-logs:
+  airflow-plugins:
