@@ -14,7 +14,7 @@ x-airflow-common:
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
     - AIRFLOW__CORE__LOGGING_LEVEL=INFO
   volumes:
-    - airflow-dags:/opt/airflow/dags
+    - ./airflow-dags:/opt/airflow/dags
     - airflow-logs:/opt/airflow/logs
     - airflow-plugins:/opt/airflow/plugins
     - ./airflow-config.cfg:/opt/airlfow/airflow.cfg
@@ -459,6 +459,5 @@ volumes:
   minio_data:
   spark-logs:
   hbase_data:
-  airflow-dags:
   airflow-logs:
   airflow-plugins:
