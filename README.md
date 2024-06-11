@@ -147,3 +147,5 @@ apache-flink won't install for some reason, need to figure it out so i can run t
 [ ] Connect Flink with S3
 
 [ ] Connect Kafka with S3
+
+[ ] Refactor MinIO S3 service in dockerfile
