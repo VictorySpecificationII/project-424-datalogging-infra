@@ -38,7 +38,7 @@ echo "PreBoot: Updated pgadmin4_psql_servers.json file with mlflow_db container'
 unset ipv4_address
 
 # Obtain the IPv4 address of the Docker container
-ipv4_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' airflow_postgres)
+ipv4_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' airflow_db)
 
 # Replace the "Host" value in the JSON file with the obtained IPv4 address
 jq --arg ipv4 "$ipv4_address" '.Servers."2".Host = $ipv4' pgadmin4_psql_servers.json > tmp_pgadmin4_psql_servers.json
@@ -54,3 +54,5 @@ docker stop pgadmin4
 docker rm pgadmin4
 
 docker-compose --env-file toolchain-config.env up -d pgadmin4
+
+echo "PostBoot: Stack is operational."
