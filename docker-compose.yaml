@@ -160,24 +160,35 @@ services:
       - spark-logs:/opt/spark/logs
 
   # A distributed NoSQL database that provides real-time read/write access to large datasets, often used for random, real-time access to big data.
-  hbase:
-    image: hyness/hbase-rest-standalone
-    container_name: hbase
+#  hbase:
+#    image: hyness/hbase-rest-standalone
+#    container_name: hbase
+#    networks:
+#      - kafka-network
+#    volumes:
+#      - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml  # Mount custom configuration directory
+#      - hbase_data:/data/hbase
+#    ports:
+     # - "2181:2181" #Zookeeper port, no need for it as we connect hbase to an external zookeeper
+#      - "${HBASE_REST_API_PORT}:8080" # REST api port, can interact with hbase api through here
+#      - "${HBASE_MASTER_PORT}:16000" # hbase master port
+#      - "${HBASE_UI_PORT}:16010" # UI port
+#      - "${HBASE_REGIONSERVER_PORT}:16020" # regionserver port, used by hbase region servers for handling read and write requests from clients.
+#      - "${HBASE_REGIONSERVER_UI_PORT}:16030" # regionserver ui port
+#    environment:
+#      - HBASE_ZOOKEEPER_QUORUM=zookeeper
+#      - HBASE_ZOOKEEPER_CLIENT_PORT=2181
+
+  cassandra:
+    image: 'bitnami/cassandra:latest'
+    container_name: cassandra
+    hostname: cassandra
+    ports:
+      - '${CASSANDRA_PORT}:9042'
+    #volumes:
+      #- ./streaming-project:/home
     networks:
       - kafka-network
-    volumes:
-      - ./hbase-site.xml:/opt/hbase/conf/hbase-site.xml  # Mount custom configuration directory
-      - hbase_data:/data/hbase
-    ports:
-     # - "2181:2181" #Zookeeper port, no need for it as we connect hbase to an external zookeeper
-      - "${HBASE_REST_API_PORT}:8080" # REST api port, can interact with hbase api through here
-      - "${HBASE_MASTER_PORT}:16000" # hbase master port
-      - "${HBASE_UI_PORT}:16010" # UI port
-      - "${HBASE_REGIONSERVER_PORT}:16020" # regionserver port, used by hbase region servers for handling read and write requests from clients.
-      - "${HBASE_REGIONSERVER_UI_PORT}:16030" # regionserver ui port
-    environment:
-      - HBASE_ZOOKEEPER_QUORUM=zookeeper
-      - HBASE_ZOOKEEPER_CLIENT_PORT=2181
 
  # Apache Ozone section
 

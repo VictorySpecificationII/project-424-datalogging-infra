@@ -3,7 +3,7 @@
     "1": {
       "Name": "mlflow_psql-docker",
       "Group": "Servers",
-      "Host": "192.168.16.2",
+      "Host": "172.23.0.16",
       "Port": 5432,
       "MaintenanceDB": "mlflow",
       "Username": "mlflow",
@@ -12,7 +12,7 @@
     "2": {
       "Name": "airflow_pqsl-docker",
       "Group": "Servers",
-      "Host": "192.168.16.13",
+      "Host": "172.23.0.7",
       "Port": 5432,
       "MaintenanceDB": "airflow",
       "Username": "airflow",
