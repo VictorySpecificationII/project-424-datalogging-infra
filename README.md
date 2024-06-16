@@ -1,5 +1,13 @@
 # Solution Design
 
+## Checkpoint 1
+
+Unity -> kafka -> spark -> cassandra
+
+## Checkpoint 2
+
+Unity -> kafka -> flink -> cassandra
+
 ## Introduction
 
 The solution architecture outlined in this document aims to establish a robust and scalable framework for building a high-throughput Big Data pipeline dedicated to telemetry acquisition and processing. Designed to support the needs of performance engineers and machine learning engineers, this architecture facilitates real-time monitoring and analysis of vehicle data to drive continuous improvement and innovation in automotive technologies.
