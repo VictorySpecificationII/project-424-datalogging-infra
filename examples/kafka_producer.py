@@ -24,7 +24,7 @@ def check_kafka_producer_connection(broker_url, topic='test-topic'):
 
 if __name__ == "__main__":
     # Replace with your Kafka broker URL
-    broker_url = '10.144.0.2:9092'
+    broker_url = '192.168.10.72:9092'
     # Optionally, replace with a specific topic you want to check
     topic = 'test-topic'
     
