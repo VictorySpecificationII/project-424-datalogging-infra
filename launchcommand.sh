@@ -20,40 +20,8 @@ kafka_server_properties_file="kafka-server.properties"
 # Update the advertised.listeners property with the machine's IP address
 sed -i "s/\(advertised.listeners=PLAINTEXT:\/\/\)[^:]*\(:9092\)/\1${machine_ip}\2/" "$PWD/$kafka_server_properties_file"
 
-
 echo "PreBoot: Updated kafka-server.properties file with machine's IP address: $machine_ip"
 
 docker-compose --env-file toolchain-config.env up -d --build
-
-# Obtain the IPv4 address of the Docker container
-ipv4_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mlflow_db)
-
-# Replace the "Host" value in the JSON file with the obtained IPv4 address
-jq --arg ipv4 "$ipv4_address" '.Servers."1".Host = $ipv4' pgadmin4_psql_servers.json > tmp_pgadmin4_psql_servers.json
-
-# Replace the original file with the updated one
-mv tmp_pgadmin4_psql_servers.json pgadmin4_psql_servers.json
-
-echo "PreBoot: Updated pgadmin4_psql_servers.json file with mlflow_db container's IP address: $ipv4_address"
-
-unset ipv4_address
-
-# Obtain the IPv4 address of the Docker container
-ipv4_address=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' airflow_db)
-
-# Replace the "Host" value in the JSON file with the obtained IPv4 address
-jq --arg ipv4 "$ipv4_address" '.Servers."2".Host = $ipv4' pgadmin4_psql_servers.json > tmp_pgadmin4_psql_servers.json
-
-# Replace the original file with the updated one
-mv tmp_pgadmin4_psql_servers.json pgadmin4_psql_servers.json
-
-echo "PreBoot: Updated pgadmin4_psql_servers.json file with airflow_db container's IP address: $ipv4_address"
-
-
-docker stop pgadmin4
-
-docker rm pgadmin4
-
-docker-compose --env-file toolchain-config.env up -d pgadmin4
 
 echo "PostBoot: Stack is operational."
