@@ -104,20 +104,20 @@ services:
 
 
   cassandra:
-    image: bitnami/cassandra:latest
+    image: 'bitnami/cassandra:latest'
     container_name: cassandra
     hostname: cassandra
     ports:
       - '${CASSANDRA_PORT}:9042'
     volumes:
-      - cassandra-data:/bitnami/cassandra
-#      - ./init_cassandra.sh:/docker-entrypoint-initdb.d/init_cassandra.sh
-#    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/init_cassandra.sh"]
-    mem_limit: 384M
-    cpus: 0.25
+      - cassandra-data:/home
+    networks:
+      - development
+    mem_limit: 1024M
+    cpus: 1
     environment:
-      - MAX_HEAP_SIZE=256M
-      - HEAP_NEWSIZE=64M
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=512M
       - CASSANDRA_PASSWORD=cassandra
       - CASSANDRA_USERNAME=cassandra
       - CASSANDRA_ENABLE_AUTH=no

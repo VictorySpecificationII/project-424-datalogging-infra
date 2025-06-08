@@ -1,27 +1,10 @@
 #!/bin/bash
 set -e
 
-DOCKER_CQLSH="docker exec -i cassandra cqlsh -u cassandra -p cassandra"
-KEYSPACE="telemetry"
-
-echo "[init_cassandra.sh] Waiting for Cassandra to be available..."
-until $DOCKER_CQLSH -e "describe keyspaces"; do
-  echo "Cassandra is unavailable - sleeping"
-  sleep 3
-done
-
-echo "[init_cassandra.sh] Cassandra is up. Checking if keyspace '$KEYSPACE' exists..."
-
-EXISTS=$($DOCKER_CQLSH -e "describe keyspace $KEYSPACE" 2>/dev/null || echo "NO")
-
-if [[ "$EXISTS" == "NO" ]]; then
-  echo "Keyspace $KEYSPACE does not exist. Creating schema..."
-
-  # Use a heredoc to feed CQL commands to cqlsh inside the container
-  $DOCKER_CQLSH <<EOF
-CREATE KEYSPACE $KEYSPACE WITH replication = {'class':'SimpleStrategy', 'replication_factor':3};
-USE $KEYSPACE;
-CREATE TABLE vehicle_telemetry (
+docker exec -i cassandra cqlsh -u cassandra -p cassandra <<EOF
+CREATE KEYSPACE IF NOT EXISTS telemetry WITH replication = {'class':'SimpleStrategy', 'replication_factor':3};
+USE telemetry;
+CREATE TABLE IF NOT EXISTS vehicle_telemetry (
   vehicle_id text,
   session_id text,
   channel_id int,
@@ -42,10 +25,3 @@ CREATE TABLE vehicle_telemetry (
   PRIMARY KEY ((vehicle_id, session_id, channel_id), timestamp)
 ) WITH CLUSTERING ORDER BY (timestamp DESC);
 EOF
-
-  echo "Schema created successfully."
-else
-  echo "Keyspace $KEYSPACE already exists. Skipping schema creation."
-fi
-
-exec "$@"
