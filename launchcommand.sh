@@ -15,7 +15,7 @@ echo "                                                                  "
 machine_ip=$(hostname -I | cut -d' ' -f1)
 
 # Path to the kafka-server.properties file
-kafka_server_properties_file="kafka-server.properties"
+kafka_server_properties_file="./tools/kafka/kafka-server.properties"
 
 # Update the advertised.listeners property with the machine's IP address
 sed -i "s/\(advertised.listeners=PLAINTEXT:\/\/\)[^:]*\(:9092\)/\1${machine_ip}\2/" "$PWD/$kafka_server_properties_file"

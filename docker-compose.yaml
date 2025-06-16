@@ -44,7 +44,7 @@ services:
     ports:
       - "${KAFKA_PORT}:9092"
     volumes:
-      - ./kafka-server.properties:/etc/kafka/server.properties
+      - ./tools/kafka/kafka-server.properties:/etc/kafka/server.properties
     depends_on:
       - zookeeper
     mem_limit: 512M
@@ -71,7 +71,7 @@ services:
   flink-jobmanager:
     build:
       context: .
-      dockerfile: flinkDockerfile
+      dockerfile: tools/flink/Dockerfile
     container_name: flink-jobmanager
     networks:
       - development
@@ -87,7 +87,7 @@ services:
   flink-taskmanager:
     build:
       context: .
-      dockerfile: flinkDockerfile
+      dockerfile: tools/flink/Dockerfile
     container_name: flink-taskmanager
     networks:
       - development
