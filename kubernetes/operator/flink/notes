@@ -1,6 +1,0 @@
-#ref https://github.com/spotify/flink-on-k8s-operator/blob/master/docs/user_guide.md
-
-
-job manager deploys in the default namespace
-
-its node port patched

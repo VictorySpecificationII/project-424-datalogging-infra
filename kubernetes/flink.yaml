@@ -1,0 +1,120 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: flink
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: flink-checkpoints
+  namespace: flink
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: microk8s-hostpath
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-jobmanager
+  namespace: flink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-jobmanager
+  template:
+    metadata:
+      labels:
+        app: flink-jobmanager
+    spec:
+      containers:
+      - name: jobmanager
+        image: flink:1.14.0
+        args: ["jobmanager"]
+        ports:
+        - containerPort: 8081
+        - containerPort: 6123
+        volumeMounts:
+        - name: checkpoints
+          mountPath: /opt/flink/checkpoints
+      volumes:
+      - name: checkpoints
+        persistentVolumeClaim:
+          claimName: flink-checkpoints
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flink-taskmanager
+  namespace: flink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink-taskmanager
+  template:
+    metadata:
+      labels:
+        app: flink-taskmanager
+    spec:
+      containers:
+      - name: taskmanager
+        image: flink:1.14.0
+        args: ["taskmanager"]
+        env:
+        - name: JOB_MANAGER_RPC_ADDRESS
+          value: flink-jobmanager
+        ports:
+        - containerPort: 6121
+        - containerPort: 6122
+        - containerPort: 6125
+        volumeMounts:
+        - name: checkpoints
+          mountPath: /opt/flink/checkpoints
+      volumes:
+      - name: checkpoints
+        persistentVolumeClaim:
+          claimName: flink-checkpoints
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flink-jobmanager
+  namespace: flink
+spec:
+  type: ClusterIP
+  selector:
+    app: flink-jobmanager
+  ports:
+  - name: ui
+    port: 8081
+    targetPort: 8081
+  - name: rpc
+    port: 6123
+    targetPort: 6123
+
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: flink-ingress
+  namespace: flink
+spec:
+  ingressClassName: nginx   # make sure nginx ingress is installed in MicroK8s
+  rules:
+  - host: flink-ui.local       # map this in /etc/hosts to your node IP for local testing
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: flink-jobmanager
+            port:
+              name: ui
