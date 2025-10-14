@@ -1,0 +1,5 @@
+install kafka
+wait 5 minutes
+install cert-manager
+wait 5 minutes
+install flink
