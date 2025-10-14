@@ -26,7 +26,7 @@ spec:
         - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
           value: "kafka-broker-1:29092,kafka-broker-2:29093,kafka-broker-3:29094"
         - name: KAFKA_CLUSTERS_0_ZOOKEEPER
-          value: "zookeeper-1:2181"
+          value: "zookeeper-0.zookeeper:2181,zookeeper-1.zookeeper:2181,zookeeper-2.zookeeper:2181"
         - name: AUTH_TYPE
           value: "LOGIN_FORM"
         - name: SPRING_SECURITY_USER_NAME
@@ -39,10 +39,12 @@ kind: Service
 metadata:
   name: kafka-ui
   namespace: perrinn-424-rt-streaming
+  labels:
+    app: kafka-ui
 spec:
-  ports:
-  - port: 8082
-    targetPort: 8080
   selector:
     app: kafka-ui
+  ports:
+    - port: 8082
+      targetPort: 8080
   type: NodePort
