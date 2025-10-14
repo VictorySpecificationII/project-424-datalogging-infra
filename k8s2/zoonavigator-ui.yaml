@@ -47,4 +47,27 @@ spec:
     - name: http
       port: 9000
       targetPort: 9000
-  type: NodePort
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: zoonavigator-ingress
+  namespace: perrinn-424-rt-streaming
+  annotations:
+    # no rewrite needed, serve root path directly
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: zoonavigator-ui.local
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: zoonavigator
+            port:
+              number: 9000
