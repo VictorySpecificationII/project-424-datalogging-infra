@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.yaml convert
+    kompose.version: 1.37.0 (fb0539e64)
+  labels:
+    io.kompose.service: flink-taskmanager
+  name: flink-taskmanager
+spec:
+  ports:
+    - name: "6122"
+      port: 6122
+      targetPort: 6122
+    - name: "6121"
+      port: 6121
+      targetPort: 6121
+  selector:
+    io.kompose.service: flink-taskmanager

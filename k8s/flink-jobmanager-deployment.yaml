@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose -f docker-compose.yaml convert
+    kompose.version: 1.37.0 (fb0539e64)
+  labels:
+    io.kompose.service: flink-jobmanager
+  name: flink-jobmanager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: flink-jobmanager
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose -f docker-compose.yaml convert
+        kompose.version: 1.37.0 (fb0539e64)
+      labels:
+        io.kompose.service: flink-jobmanager
+    spec:
+      containers:
+        - args:
+            - jobmanager
+          env:
+            - name: JOB_MANAGER_RPC_ADDRESS
+              value: flink-jobmanager
+          image: flink-jobmanager
+          name: flink-jobmanager
+          ports:
+            - containerPort: 8081
+              protocol: TCP
+            - containerPort: 6123
+              protocol: TCP
+          resources:
+            limits:
+              memory: "536870912"
+      restartPolicy: Always
