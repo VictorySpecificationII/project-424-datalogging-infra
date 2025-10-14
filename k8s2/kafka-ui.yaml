@@ -24,7 +24,7 @@ spec:
         - name: KAFKA_CLUSTERS_0_NAME
           value: "perrinn-kafka"
         - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092,kafka-1.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092,kafka-2.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092"
+          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092"
         - name: AUTH_TYPE
           value: "LOGIN_FORM"
         - name: SPRING_SECURITY_USER_NAME

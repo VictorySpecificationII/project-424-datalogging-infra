@@ -41,7 +41,7 @@ spec:
             - containerPort: 9092
           env:
             - name: REPLICAS
-              value: "3"
+              value: "1"
             - name: SERVICE
               value: kafka-svc
             - name: NAMESPACE
@@ -53,9 +53,9 @@ spec:
             - name: CLUSTER_ID
               value: oh-sxaDRTcyAr6pFRbXyzA  # pre-generated cluster ID
             - name: DEFAULT_REPLICATION_FACTOR
-              value: "3"
+              value: "1"
             - name: DEFAULT_MIN_INSYNC_REPLICAS
-              value: "2"
+              value: "1"
           volumeMounts:
             - name: kafka-data
               mountPath: /mnt/kafka
