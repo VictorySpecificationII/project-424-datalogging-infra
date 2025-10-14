@@ -16,6 +16,7 @@ spec:
       storage: 5Gi
   storageClassName: microk8s-hostpath
 ---
+# JobManager Deployment (manager node)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -46,6 +47,7 @@ spec:
         persistentVolumeClaim:
           claimName: flink-checkpoints
 ---
+# TaskManager Deployment (worker nodes)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,35 +82,36 @@ spec:
         persistentVolumeClaim:
           claimName: flink-checkpoints
 ---
+# JobManager Service
 apiVersion: v1
 kind: Service
 metadata:
   name: flink-jobmanager
   namespace: flink
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: flink-jobmanager
   ports:
   - name: ui
     port: 8081
     targetPort: 8081
+    nodePort: 32081
   - name: rpc
     port: 6123
     targetPort: 6123
-
-
+    nodePort: 32123
 ---
-
+# Ingress for Flink UI
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: flink-ingress
   namespace: flink
 spec:
-  ingressClassName: nginx   # make sure nginx ingress is installed in MicroK8s
+  ingressClassName: nginx
   rules:
-  - host: flink-ui.local       # map this in /etc/hosts to your node IP for local testing
+  - host: flink-ui.local
     http:
       paths:
       - path: /
