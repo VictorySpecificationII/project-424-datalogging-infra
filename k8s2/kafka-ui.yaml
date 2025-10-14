@@ -22,11 +22,9 @@ spec:
         - containerPort: 8080
         env:
         - name: KAFKA_CLUSTERS_0_NAME
-          value: "local"
+          value: "perrinn-kafka"
         - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
-          value: "PLAINTEXT://kafka.perrinn-424-rt-streaming.svc.cluster.local:9092"
-        - name: KAFKA_CLUSTERS_0_ZOOKEEPER
-          value: "zookeeper.perrinn-424-rt-streaming.svc.cluster.local:2181"
+          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092,kafka-1.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092,kafka-2.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092"
         - name: AUTH_TYPE
           value: "LOGIN_FORM"
         - name: SPRING_SECURITY_USER_NAME
@@ -50,18 +48,15 @@ spec:
   type: ClusterIP
 
 ---
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kafka-ui-ingress
   namespace: perrinn-424-rt-streaming
-  annotations:
-    # remove rewrite-target; we want / to go directly to the service
 spec:
   ingressClassName: nginx
   rules:
-  - host: kafka-ui.local    # pick a test domain and map in /etc/hosts
+  - host: kafka-ui.local    # map this in /etc/hosts for local testing
     http:
       paths:
       - path: /
