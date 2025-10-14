@@ -47,4 +47,27 @@ spec:
   ports:
     - port: 8082
       targetPort: 8080
-  type: NodePort
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-ui-ingress
+  namespace: perrinn-424-rt-streaming
+  annotations:
+    # remove rewrite-target; we want / to go directly to the service
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kafka-ui.local    # pick a test domain and map in /etc/hosts
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-ui
+            port:
+              number: 8082
