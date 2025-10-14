@@ -27,7 +27,7 @@ metadata:
   namespace: perrinn-424-rt-streaming
 spec:
   serviceName: "zookeeper"
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: zookeeper
