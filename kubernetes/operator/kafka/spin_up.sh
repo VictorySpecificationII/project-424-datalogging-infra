@@ -24,6 +24,9 @@ microk8s kubectl apply -f "https://strimzi.io/examples/$STRIMZI_VERSION/kafka/ka
 echo "Waiting for Kafka cluster '$CLUSTER_NAME' to be ready..."
 microk8s kubectl wait kafka/$CLUSTER_NAME --for=condition=Ready --timeout=300s -n "$NAMESPACE"
 
+echo "Patching broker to node port"
+microk8s kubectl patch svc my-cluster-kafka-bootstrap -n kafka -p '{"spec": {"type": "NodePort"}}'
+
 echo "Kafka cluster '$CLUSTER_NAME' is ready."
 
 echo "You can now produce messages using the following command:"
