@@ -1,0 +1,76 @@
+# ---------------------------
+# Kafka REST Proxy Deployment
+# ---------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-rest-proxy
+  namespace: perrinn-424-rt-streaming
+  labels:
+    app: kafka-rest-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-rest-proxy
+  template:
+    metadata:
+      labels:
+        app: kafka-rest-proxy
+    spec:
+      containers:
+      - name: kafka-rest-proxy
+        image: confluentinc/cp-kafka-rest:latest
+        ports:
+        - containerPort: 8082
+        env:
+        - name: KAFKA_REST_BOOTSTRAP_SERVERS
+          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092"
+        - name: KAFKA_REST_LISTENERS
+          value: "http://0.0.0.0:8082"
+        # Optional: if you are using schema registry
+        #- name: KAFKA_REST_SCHEMA_REGISTRY_URL
+        #  value: "http://schema-registry:8081"
+
+---
+# ---------------------------
+# Kafka REST Proxy Service
+# ---------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-rest-proxy
+  namespace: perrinn-424-rt-streaming
+  labels:
+    app: kafka-rest-proxy
+spec:
+  selector:
+    app: kafka-rest-proxy
+  ports:
+    - port: 8082
+      targetPort: 8082
+  type: ClusterIP
+
+---
+# ---------------------------
+# Kafka REST Proxy Ingress
+# ---------------------------
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-rest-proxy-ingress
+  namespace: perrinn-424-rt-streaming
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kafka-rest-proxy.local   # map this in /etc/hosts for local testing
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kafka-rest-proxy
+            port:
+              number: 8082
+
