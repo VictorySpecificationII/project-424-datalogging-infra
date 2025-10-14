@@ -13,6 +13,7 @@ In your localhost `/etc/hosts` file, add:
 ```
 127.0.0.1 kafka-ui.local
 127.0.0.1 zoonavigator-ui.local
+127.0.0.1 kafka-rest-proxy.local
 ```
 
 Then, depending on whether you're running Microk8s or K3/8s, modify the `deploy.sh` file and run:

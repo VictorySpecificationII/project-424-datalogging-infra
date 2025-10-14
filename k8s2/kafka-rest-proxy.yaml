@@ -25,7 +25,7 @@ spec:
         - containerPort: 8082
         env:
         - name: KAFKA_REST_BOOTSTRAP_SERVERS
-          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092"
+          value: "kafka-0.kafka-svc.perrinn-424-rt-streaming.svc.cluster.local:9092" #add more servers here as you scale
         - name: KAFKA_REST_LISTENERS
           value: "http://0.0.0.0:8082"
         # Optional: if you are using schema registry
