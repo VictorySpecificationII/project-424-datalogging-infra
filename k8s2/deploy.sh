@@ -11,3 +11,4 @@ microk8s kubectl wait --for=condition=Ready pod -l app=kafka-broker-3 -n perrinn
 microk8s kubectl wait --for=condition=complete job/init-kafka -n perrinn-424-rt-streaming --timeout=180s
 microk8s kubectl apply -f kafka-ui.yaml
 microk8s kubectl wait --for=condition=Ready pod -l app=kafka-ui -n perrinn-424-rt-streaming --timeout=180s
+microk8s kubectl apply -f kafka-rest-proxy.yaml
