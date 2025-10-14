@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
       - name: jobmanager
-        image: flink:1.14.0
+        image: flink:2.1.0
         args: ["jobmanager"]
         ports:
         - containerPort: 8081
@@ -65,7 +65,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: flink:1.14.0
+        image: flink:2.1.0
         args: ["taskmanager"]
         env:
         - name: JOB_MANAGER_RPC_ADDRESS
