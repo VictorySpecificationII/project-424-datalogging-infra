@@ -4,29 +4,37 @@ networks:
   kafka-net:
     driver: bridge
 
+volumes:
+  kafka-data:
+    driver: local
+
 services:
   kafka:
-    image: doughgle/kafka-kraft:latest
+    image: confluentinc/cp-kafka:latest
     container_name: kafka
+    hostname: kafka
     ports:
       - "9092:9092"
-      - "9093:9093"  # Controller port
+      - "9093:9093"
     environment:
-      BROKER_ID: 1
-      REPLICAS: "1"
-      SERVICE: kafka
-      NAMESPACE: default
-      SHARE_DIR: /mnt/kafka
-      CLUSTER_ID: oh-sxaDRTcyAr6pFRbXyzA
-      DEFAULT_REPLICATION_FACTOR: "1"
-      DEFAULT_MIN_INSYNC_REPLICAS: "1"
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: "Mk3OEYBSD34fcwNTJENDM2Qk"
     volumes:
-      - kafka-data:/mnt/kafka
+      - kafka-data:/var/lib/kafka/data
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - kafka-net
 
@@ -46,6 +54,3 @@ services:
     networks:
       - kafka-net
 
-volumes:
-  kafka-data:
-    driver: local
