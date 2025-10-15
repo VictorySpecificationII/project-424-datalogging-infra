@@ -1,0 +1,51 @@
+version: '3.8'
+
+networks:
+  kafka-net:
+    driver: bridge
+
+services:
+  kafka:
+    image: doughgle/kafka-kraft:latest
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"  # Controller port
+    environment:
+      BROKER_ID: 1
+      REPLICAS: "1"
+      SERVICE: kafka
+      NAMESPACE: default
+      SHARE_DIR: /mnt/kafka
+      CLUSTER_ID: oh-sxaDRTcyAr6pFRbXyzA
+      DEFAULT_REPLICATION_FACTOR: "1"
+      DEFAULT_MIN_INSYNC_REPLICAS: "1"
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    volumes:
+      - kafka-data:/mnt/kafka
+    networks:
+      - kafka-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8082:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: "perrinn-kafka"
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
+      AUTH_TYPE: "LOGIN_FORM"
+      SPRING_SECURITY_USER_NAME: "perrinn424"
+      SPRING_SECURITY_USER_PASSWORD: "perrinn424"
+    depends_on:
+      - kafka
+    networks:
+      - kafka-net
+
+volumes:
+  kafka-data:
+    driver: local
