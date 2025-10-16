@@ -73,3 +73,16 @@ sudo apt-get install openjdk-21-jdk
 
 
 
+## Cassandra
+
+Modify the `.cqlsh` file in `cassandra-init` to establish your table. It will automatically load in Cassandra.
+
+```
+docker exec -it cassandra /bin/bash
+cqlsh
+DESCRIBE KEYSPACES;
+USE telemetry;
+DESCRIBE TABLES;
+```
+
+Table should show.
