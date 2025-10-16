@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "dxo9SYRHaehw/70n/blpNbyF/QTNx+gRNFNgopzyYFJBV49rkRYjbQixDu4zX2+1zLZnMCU8KPwlNHtXyat+VA==",
+  "success": true,
+  "projectFilePath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageConsumer/KafkaMessageConsumer.csproj",
+  "expectedPackageFiles": [
+    "/home/achristofi/.nuget/packages/confluent.kafka/2.12.0/confluent.kafka.2.12.0.nupkg.sha512",
+    "/home/achristofi/.nuget/packages/librdkafka.redist/2.12.0/librdkafka.redist.2.12.0.nupkg.sha512"
+  ],
+  "logs": []
+}
