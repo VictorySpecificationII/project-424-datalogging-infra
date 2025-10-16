@@ -73,5 +73,16 @@ services:
       - cassandra-data:/var/lib/cassandra
       - ./cassandra-init:/docker-entrypoint-initdb.d
 
+
+  go-consumer:
+    build:
+      context: ./kafka2cassandra
+      dockerfile: Dockerfile
+    container_name: go-consumer
+    depends_on:
+      - broker
+      - cassandra
+
+
 volumes:
   cassandra-data:
