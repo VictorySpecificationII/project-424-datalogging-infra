@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "lZBJhm2yfq/PddMReLwiMMJGpvjKFit3EB0LjpgBqJtOqi4cucjNDTZvgTNGUuSob9y6Dbyfs9UsPPsLHYBUtA==",
+  "success": true,
+  "projectFilePath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaTopicCreator/KafkaTopicCreator.csproj",
+  "expectedPackageFiles": [
+    "/home/achristofi/.nuget/packages/confluent.kafka/2.12.0/confluent.kafka.2.12.0.nupkg.sha512",
+    "/home/achristofi/.nuget/packages/librdkafka.redist/2.12.0/librdkafka.redist.2.12.0.nupkg.sha512"
+  ],
+  "logs": []
+}
