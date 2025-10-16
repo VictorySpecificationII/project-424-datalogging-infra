@@ -34,10 +34,12 @@ type TelemetryRecord struct {
 func main() {
     ctx := context.Background()
 
-    // Kafka consumer
+    // Kafka reader config
+    kafkaBrokers := []string{"broker:29092"}
+    kafkaTopic := "p424-telemetry-batch"
     r := kafka.NewReader(kafka.ReaderConfig{
-        Brokers:  []string{"broker:29092"},
-        Topic:    "p424-telemetry-batch",
+        Brokers:  kafkaBrokers,
+        Topic:    kafkaTopic,
         GroupID:  "go-telemetry-consumer",
         MinBytes: 1,
         MaxBytes: 10e6,
@@ -55,6 +57,24 @@ func main() {
         log.Fatalf("Failed to connect to Cassandra: %v", err)
     }
     defer session.Close()
+
+    // --- Pre-flight checks ---
+
+    // --- Kafka connectivity check ---
+    conn, err := kafka.Dial("tcp", kafkaBrokers[0])
+    if err != nil {
+        log.Printf("WARNING: Cannot reach Kafka broker %s: %v", kafkaBrokers[0], err)
+    } else {
+        log.Printf("Successfully connected to Kafka broker %s", kafkaBrokers[0])
+        conn.Close()
+    }
+
+    // Cassandra check
+    if err := session.Query("SELECT release_version FROM system.local").Exec(); err != nil {
+        log.Printf("WARNING: Cannot reach Cassandra: %v", err)
+    } else {
+        log.Println("Successfully connected to Cassandra")
+    }
 
     log.Println("Kafka -> Cassandra pipeline started...")
 
