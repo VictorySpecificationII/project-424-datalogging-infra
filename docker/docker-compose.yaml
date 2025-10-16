@@ -38,6 +38,7 @@ services:
 
   flink-jobmanager:
     image: flink:latest
+    container_name: flink-jobmanager
     ports:
       - "8081:8081"
     command: jobmanager
@@ -48,6 +49,7 @@ services:
 
   flnk-taskmanager:
     image: flink:latest
+    container_name: flink-taskmanager
     depends_on:
       - flink-jobmanager
     command: taskmanager
@@ -58,3 +60,17 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: flink-jobmanager
         taskmanager.numberOfTaskSlots: 2
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_USER=admin
+      - CASSANDRA_PASSWORD=admin
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+
+volumes:
+  cassandra-data:
