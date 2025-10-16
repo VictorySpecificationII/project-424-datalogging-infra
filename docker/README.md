@@ -80,6 +80,7 @@ Modify the `.cqlsh` file in `cassandra-init` to establish your table. It will au
 ```
 docker exec -it cassandra /bin/bash
 cqlsh
+SOURCE '/docker-entrypoint-initdb.d/schema.cql';
 DESCRIBE KEYSPACES;
 USE telemetry;
 DESCRIBE TABLES;
