@@ -35,7 +35,7 @@ func main() {
     ctx := context.Background()
 
     // Kafka reader config
-    kafkaBrokers := []string{"broker:29092"}
+    kafkaBrokers := []string{"localhost:9092"}
     kafkaTopic := "p424-telemetry-batch"
     r := kafka.NewReader(kafka.ReaderConfig{
         Brokers:  kafkaBrokers,
@@ -47,7 +47,7 @@ func main() {
     defer r.Close()
 
     // Cassandra session
-    cluster := gocql.NewCluster("cassandra")
+    cluster := gocql.NewCluster("localhost")
     cluster.Keyspace = "telemetry"
     cluster.Consistency = gocql.Quorum
     cluster.Timeout = 5 * time.Second
