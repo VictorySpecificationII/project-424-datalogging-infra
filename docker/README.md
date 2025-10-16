@@ -51,6 +51,12 @@ localhost:8081 - Flink UI
 curl -fL https://github.com/coursier/coursier/releases/latest/download/cs-x86_64-pc-linux.gz | gzip -d > cs && chmod +x cs && ./cs setup
 ```
 
+To build a job, run:
+
+```
+sbt package
+```
+
 Then follow the instructions. Once done, log out/reboot, and run `scala --version` to verify.
 
 ## SBT Installation
@@ -87,3 +93,9 @@ DESCRIBE TABLES;
 ```
 
 Table should show.
+
+## Maven build
+
+```
+sudo apt-get install maven
+```
