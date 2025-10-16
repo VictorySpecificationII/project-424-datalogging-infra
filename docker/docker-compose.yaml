@@ -36,30 +36,30 @@ services:
     depends_on:
       - broker
 
-#  flink-jobmanager:
-#    image: flink:latest
-#    container_name: flink-jobmanager
-#    ports:
-#      - "8081:8081"
-#    command: jobmanager
-#    environment:
-#      - |
-#        FLINK_PROPERTIES=
-#        jobmanager.rpc.address: flink-jobmanager        
+  flink-jobmanager:
+    image: flink:latest
+    container_name: flink-jobmanager
+    ports:
+      - "8081:8081"
+    command: jobmanager
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager        
 
-#  flnk-taskmanager:
-#    image: flink:latest
-#    container_name: flink-taskmanager
-#    depends_on:
-#      - flink-jobmanager
-#    command: taskmanager
-#    deploy:
-#      replicas: 1
-#    environment:
-#      - |
-#        FLINK_PROPERTIES=
-#        jobmanager.rpc.address: flink-jobmanager
-#        taskmanager.numberOfTaskSlots: 2
+  flnk-taskmanager:
+    image: flink:latest
+    container_name: flink-taskmanager
+    depends_on:
+      - flink-jobmanager
+    command: taskmanager
+    deploy:
+      replicas: 1
+    environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.rpc.address: flink-jobmanager
+        taskmanager.numberOfTaskSlots: 2
 
   cassandra:
     image: cassandra:latest

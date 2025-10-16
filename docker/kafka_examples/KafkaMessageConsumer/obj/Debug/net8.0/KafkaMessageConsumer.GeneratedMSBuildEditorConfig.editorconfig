@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = KafkaMessageConsumer
-build_property.ProjectDir = /home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageConsumer/
+build_property.ProjectDir = /home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaMessageConsumer/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

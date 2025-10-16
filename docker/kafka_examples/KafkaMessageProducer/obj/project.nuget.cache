@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "k8A1A5CuaI98+uC1JKjbTX6SCRY5qxdxl6GMoXKDYsChGhGUQl/a2JaW3NXE4/Nj6TxueJCxcPWAtElcnNezjg==",
+  "dgSpecHash": "kWGvo+DeG4M1cpMcC4nfDbl5vYei3iUIWU0w2PwPX3uBTAwhxfUNNPeQYO66rhsS40bpZxqui9oDoShHmCBrjw==",
   "success": true,
-  "projectFilePath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageProducer/KafkaMessageProducer.csproj",
+  "projectFilePath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaMessageProducer/KafkaMessageProducer.csproj",
   "expectedPackageFiles": [
     "/home/achristofi/.nuget/packages/confluent.kafka/2.12.0/confluent.kafka.2.12.0.nupkg.sha512",
     "/home/achristofi/.nuget/packages/librdkafka.redist/2.12.0/librdkafka.redist.2.12.0.nupkg.sha512"

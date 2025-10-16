@@ -99,3 +99,11 @@ Table should show.
 ```
 sudo apt-get install maven
 ```
+
+To build the flink job in the flink examples, run
+
+```
+mvn clean package
+```
+
+It will generate the jar in target/ then you can upload to flink

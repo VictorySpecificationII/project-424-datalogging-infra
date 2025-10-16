@@ -205,11 +205,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageProducer/KafkaMessageProducer.csproj",
+      "projectUniqueName": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaMessageProducer/KafkaMessageProducer.csproj",
       "projectName": "KafkaMessageProducer",
-      "projectPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageProducer/KafkaMessageProducer.csproj",
+      "projectPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaMessageProducer/KafkaMessageProducer.csproj",
       "packagesPath": "/home/achristofi/.nuget/packages/",
-      "outputPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaMessageProducer/obj/",
+      "outputPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaMessageProducer/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/achristofi/.nuget/NuGet/NuGet.Config"

@@ -205,11 +205,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaTopicCreator/KafkaTopicCreator.csproj",
+      "projectUniqueName": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaTopicCreator/KafkaTopicCreator.csproj",
       "projectName": "KafkaTopicCreator",
-      "projectPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaTopicCreator/KafkaTopicCreator.csproj",
+      "projectPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaTopicCreator/KafkaTopicCreator.csproj",
       "packagesPath": "/home/achristofi/.nuget/packages/",
-      "outputPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/KafkaTopicCreator/obj/",
+      "outputPath": "/home/achristofi/Desktop/project-424-datalogging-infra/docker/kafka_examples/KafkaTopicCreator/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/achristofi/.nuget/NuGet/NuGet.Config"
