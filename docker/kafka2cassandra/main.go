@@ -37,7 +37,7 @@ func main() {
 
     // Kafka reader config
     kafkaBrokers := []string{"localhost:9092"}
-    kafkaTopic := "p424-telemetry-batch"
+    kafkaTopic := "p424-telemetry-batch-20251016-192919"
     log.Printf("[DEBUG] Configuring Kafka reader: brokers=%v, topic=%s\n", kafkaBrokers, kafkaTopic)
     r := kafka.NewReader(kafka.ReaderConfig{
         Brokers:  kafkaBrokers,
