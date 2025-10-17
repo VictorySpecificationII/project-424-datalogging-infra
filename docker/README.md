@@ -82,3 +82,8 @@ curl http://localhost:8083/connectors
 You should get an `[]` response, since it's empty
 
 
+For the connectors, you can copy any JARs to the named volume using this command:
+
+```
+docker cp /full/path/to/your-connector.jar connect:/etc/kafka-connect/jars/
+```
