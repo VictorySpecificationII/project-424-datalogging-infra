@@ -64,3 +64,21 @@ curl http://localhost:8281/subjects
 ```
 
 Should come up empty, since it's a fresh installation.
+
+## Kafka Connect
+
+Run, to test:
+
+```
+curl http://localhost:8083/
+```
+
+You should get a response including commit number, you see that, it means it's reachable.
+
+```
+curl http://localhost:8083/connectors
+```
+
+You should get an `[]` response, since it's empty
+
+
