@@ -1,3 +1,15 @@
+# Component List
+
+| Component        | Role/Use Case                                         | Comments                                                                                  |
+|-----------------|----------------------------------------------------------------------------|------------------------------------------------------------------------------------------|
+| Kafka UI         | Observability for topics, messages, and connectors                        | Useful for debugging telemetry streams in real time.                                     |
+| Kafka Broker     | Core pub/sub messaging for telemetry data (lap times, sensor readings, GPS, etc.) | Handles high-throughput streaming. Can scale horizontally if needed.                     |
+| Kafka REST Proxy | Lightweight way to ingest telemetry data from devices or dashboards without a full Kafka client | Good for web dashboards or Python/JS scripts. Adds minimal latency.                       |
+| Kafka Connect    | Integration layer for moving data in/out of Kafka (sinks to files, databases, Cassandra, etc.) | Lets you persist raw telemetry, push to analytics DB, or trigger processing pipelines automatically. |
+| Schema Registry  | Ensures consistent data formats across all telemetry messages             | Essential for versioned telemetry schemas; prevents client mismatches.                   |
+| Flink            | Real-time analytics and event processing                                   | Enables in-flight computation: lap time aggregations, anomaly detection, predictive modeling. |
+| Cassandra        | Time-series storage for raw or processed telemetry                        | Excellent for high-volume sensor data that you need to query by timestamp/vehicle/etc.  |
+
 # Service Map
 
 | Service           | Container Name       | Image                                | Role / Description                        | Exposed Ports         |
