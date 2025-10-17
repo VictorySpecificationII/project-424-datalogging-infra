@@ -87,3 +87,71 @@ For the connectors, you can copy any JARs to the named volume using this command
 ```
 docker cp /full/path/to/your-connector.jar connect:/etc/kafka-connect/jars/
 ```
+
+### Example
+Link to a connector for testing: `https://mvnrepository.com/artifact/org.apache.kafka/connect-file/4.1.0`
+Command to copy to the container: `docker cp connect-file-4.1.0.jar connect:/etc/kafka-connect/jars/`
+Command to restart the container: `docker-compose restart connect`
+Command to test if the connector is loaded: `curl http://localhost:8083/connector-plugins`
+
+It should give you this output:
+
+```
+[{"class":"org.apache.kafka.connect.file.FileStreamSinkConnector","type":"sink","version":"8.1.0-ccs"},{"class":"org.apache.kafka.connect.file.FileStreamSourceConnector","type":"source","version":"8.1.0-ccs"},{"class":"org.apache.kafka.connect.mirror.MirrorCheckpointConnector","type":"source","version":"8.1.0-ccs"},{"class":"org.apache.kafka.connect.mirror.MirrorHeartbeatConnector","type":"source","version":"8.1.0-ccs"},{"class":"org.apache.kafka.connect.mirror.MirrorSourceConnector","type":"source","version":"8.1.0-ccs"}]`
+```
+
+The connector is loaded.
+
+Now you create a test connector based on the connector jar we imported:
+
+```
+curl -X POST -H "Content-Type: application/json" \
+  --data '{
+    "name": "test-sink",
+    "config": {
+      "connector.class": "org.apache.kafka.connect.file.FileStreamSinkConnector",
+      "tasks.max": "1",
+      "file": "/tmp/output.txt",
+      "topics": "my-topic"
+    }
+  }' \
+  http://localhost:8083/connectors
+```
+Should give an output that looks like this:
+
+```
+{"name":"test-sink","config":{"connector.class":"org.apache.kafka.connect.file.FileStreamSinkConnector","tasks.max":"1","file":"/tmp/output.txt","topics":"my-topic","name":"test-sink"},"tasks":[],"type":"sink"}
+```
+
+Check connector status with
+
+```
+curl http://localhost:8083/connectors/test-sink/status | jq
+```
+
+Check connector config with
+
+```
+curl http://localhost:8083/connectors/test-sink/config | jq
+```
+
+You have created a topic named "my-topic" in Kafka and have some messages in it. If you haven't, check the section Kafka above.
+
+Publish a message via REST Proxy:
+
+```
+curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" \
+  --data '{
+    "records":[{"value":{"foo":"bar"}}]
+  }' \
+  http://localhost:8082/topics/my-topic
+
+```
+
+Any messages you publish to that topic, will appear in the `/tmp/output.txt` file inside the container for this test.
+
+You can check with:
+
+```
+docker exec -it connect cat /tmp/output.txt
+``` 
