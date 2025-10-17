@@ -125,17 +125,17 @@ services:
         taskmanager.numberOfTaskSlots: 2
 
 
-#  cassandra:
-#    image: cassandra:latest
-#    container_name: cassandra
-#    ports:
-#      - "9042:9042"
-#    environment:
-#      - CASSANDRA_USER=admin
-#      - CASSANDRA_PASSWORD=admin
-#    volumes:
-#      - cassandra-data:/var/lib/cassandra
-#      - ./cassandra-init:/docker-entrypoint-initdb.d
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_USER=admin
+      - CASSANDRA_PASSWORD=admin
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+      - ./cassandra-init:/docker-entrypoint-initdb.d
 
 
 #  go-consumer:
@@ -149,5 +149,5 @@ services:
 
 
 volumes:
-#  cassandra-data:
+  cassandra-data:
   kafka-connect-data:
