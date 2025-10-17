@@ -159,3 +159,20 @@ You can check with:
 ```
 docker exec -it connect cat /tmp/output.txt
 ``` 
+
+## Flink
+
+Navigate to `localhost:8087` to see the UI, the task manager is already bound to the job manager for you.
+
+## Cassandra
+
+Run the following commands to verify it works:
+
+```
+docker exec -it cassandra /bin/bash
+cqlsh
+SOURCE '/docker-entrypoint-initdb.d/schema.cql';
+DESCRIBE KEYSPACES;
+USE telemetry;
+DESCRIBE TABLES;
+```
