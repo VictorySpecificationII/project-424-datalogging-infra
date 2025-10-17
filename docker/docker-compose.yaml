@@ -112,7 +112,7 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: flink-jobmanager
 
-  flnk-taskmanager:
+  flink-taskmanager:
     image: flink:latest
     container_name: flink-taskmanager
     depends_on:
