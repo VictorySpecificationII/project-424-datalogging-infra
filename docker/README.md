@@ -46,3 +46,21 @@ curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" \
   --data '{"records":[{"value":{"foo":"bar"}}]}' \
   http://localhost:8082/topics/my-topic
 ```
+
+Should give you something like:
+
+```
+{"offsets":[{"partition":0,"offset":1,"error_code":null,"error":null}],"key_schema_id":null,"value_schema_id":null}
+```
+
+That means success.
+
+## Schema Registry
+
+Run, to test:
+
+```
+curl http://localhost:8281/subjects
+```
+
+Should come up empty, since it's a fresh installation.
