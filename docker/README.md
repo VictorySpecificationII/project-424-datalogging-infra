@@ -35,6 +35,10 @@ Take note of the `--bootstrap-server` flag. Because you're connecting to Kafka i
 If you were to use a client outside the container to connect to Kafka, a producer application running on your laptop for example, you'd use `localhost:9092` instead.
 
 
+## Deployment Validation
+
+Follow the steps below in order, to validate the stack.
+
 ## REST Proxy
 
 Create a topic named "my-topic" in Kafka via the UI.
