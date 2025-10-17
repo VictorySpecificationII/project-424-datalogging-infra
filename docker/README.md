@@ -33,3 +33,16 @@ docker compose down -v
 ### Important
 Take note of the `--bootstrap-server` flag. Because you're connecting to Kafka inside the container, you use `broker:29092` for the host:port. 
 If you were to use a client outside the container to connect to Kafka, a producer application running on your laptop for example, you'd use `localhost:9092` instead.
+
+
+## REST Proxy
+
+Create a topic named "my-topic" in Kafka via the UI.
+
+Then run, to test:
+
+```
+curl -X POST -H "Content-Type: application/vnd.kafka.json.v2+json" \
+  --data '{"records":[{"value":{"foo":"bar"}}]}' \
+  http://localhost:8082/topics/my-topic
+```
