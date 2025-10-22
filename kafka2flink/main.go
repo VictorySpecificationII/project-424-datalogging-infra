@@ -3,7 +3,10 @@ package main
 import (
     "context"
     "encoding/json"
+    "fmt"
     "log"
+    "sort"
+    "strings"
     "time"
 
     "github.com/gocql/gocql"
@@ -11,23 +14,87 @@ import (
 )
 
 type TelemetryRecord struct {
-    VehicleID        string  `json:"vehicleId"`
-    SessionID        string  `json:"sessionId"`
-    Timestamp        float64 `json:"timestamp"`
-    ChannelID        int     `json:"channelId"`
-    ChannelName      string  `json:"channelName"`
-    ChannelValue     float64 `json:"channelValue"`
-    ChannelUnit      string  `json:"channelUnit"`
-    ChannelMinValue  string  `json:"channelMinValue"`
-    ChannelMaxValue  string  `json:"channelMaxValue"`
+    VehicleID         string  `json:"vehicleId"`
+    SessionID         string  `json:"sessionId"`
+    Timestamp         float64 `json:"timestamp"`
+    ChannelID         int     `json:"channelId"`
+    ChannelName       string  `json:"channelName"`
+    ChannelValue      float64 `json:"channelValue"`
+    ChannelUnit       string  `json:"channelUnit"`
+    ChannelMinValue   string  `json:"channelMinValue"`
+    ChannelMaxValue   string  `json:"channelMaxValue"`
     ChannelMultiplier float64 `json:"channelMultiplier"`
-    ChannelGroup     string  `json:"channelGroup"`
-    ChannelCount     int     `json:"channelCount"`
-    ExpectedFrequency string `json:"expectedFrequency"`
-    ActualFrequency  float64 `json:"actualFrequency"`
-    UpdateInterval   int     `json:"updateInterval"`
-    FrequencyLabel   string  `json:"frequencyLabel"`
-    Semantic         string  `json:"semantic"`
+    ChannelGroup      string  `json:"channelGroup"`
+    ChannelCount      int     `json:"channelCount"`
+    ExpectedFrequency string  `json:"expectedFrequency"`
+    ActualFrequency   float64 `json:"actualFrequency"`
+    UpdateInterval    int     `json:"updateInterval"`
+    FrequencyLabel    string  `json:"frequencyLabel"`
+    Semantic          string  `json:"semantic"`
+}
+
+func sanitizeTableName(topic string) string {
+    table := strings.ReplaceAll(topic, "-", "_")
+    table = strings.ReplaceAll(table, ".", "_")
+    return "telemetry_" + table
+}
+
+func getLatestTopic(broker string, prefix string) (string, error) {
+    conn, err := kafka.Dial("tcp", broker)
+    if err != nil {
+        return "", err
+    }
+    defer conn.Close()
+
+    partitions, err := conn.ReadPartitions()
+    if err != nil {
+        return "", err
+    }
+
+    topicsMap := make(map[string]struct{})
+    for _, p := range partitions {
+        if strings.HasPrefix(p.Topic, prefix) {
+            topicsMap[p.Topic] = struct{}{}
+        }
+    }
+
+    if len(topicsMap) == 0 {
+        return "", fmt.Errorf("no topics found with prefix %s", prefix)
+    }
+
+    topics := make([]string, 0, len(topicsMap))
+    for t := range topicsMap {
+        topics = append(topics, t)
+    }
+
+    sort.Strings(topics)
+    return topics[len(topics)-1], nil
+}
+
+func createTelemetryTable(session *gocql.Session, tableName string) error {
+    query := fmt.Sprintf(`
+        CREATE TABLE IF NOT EXISTS %s (
+            vehicle_id text,
+            session_id text,
+            timestamp double,
+            channel_id int,
+            channel_name text,
+            channel_value double,
+            channel_unit text,
+            channel_min_value text,
+            channel_max_value text,
+            channel_multiplier double,
+            channel_group text,
+            channel_count int,
+            expected_frequency text,
+            actual_frequency double,
+            update_interval int,
+            frequency_label text,
+            semantic text,
+            PRIMARY KEY ((vehicle_id, session_id), timestamp, channel_id)
+        ) WITH CLUSTERING ORDER BY (timestamp ASC, channel_id ASC);
+    `, tableName)
+    return session.Query(query).Exec()
 }
 
 func main() {
@@ -35,10 +102,39 @@ func main() {
 
     ctx := context.Background()
 
-    // Kafka reader config
     kafkaBrokers := []string{"localhost:9092"}
-    kafkaTopic := "p424-telemetry-batch-20251016-192919"
-    log.Printf("[DEBUG] Configuring Kafka reader: brokers=%v, topic=%s\n", kafkaBrokers, kafkaTopic)
+    kafkaTopicPrefix := "p424-telemetry-batch-"
+
+    // --- Get latest topic ---
+    kafkaTopic, err := getLatestTopic(kafkaBrokers[0], kafkaTopicPrefix)
+    if err != nil {
+        log.Fatalf("[ERROR] Cannot find latest Kafka topic: %v", err)
+    }
+    log.Printf("[DEBUG] Using latest Kafka topic: %s", kafkaTopic)
+
+    tableName := sanitizeTableName(kafkaTopic)
+    log.Printf("[DEBUG] Cassandra table will be: %s", tableName)
+
+    // --- Cassandra session ---
+    cluster := gocql.NewCluster("localhost")
+    cluster.Keyspace = "telemetry"
+    cluster.Consistency = gocql.Quorum
+    cluster.Timeout = 5 * time.Second
+
+    session, err := cluster.CreateSession()
+    if err != nil {
+        log.Fatalf("[ERROR] Failed to connect to Cassandra: %v", err)
+    }
+    defer session.Close()
+    log.Println("[DEBUG] Cassandra session established")
+
+    // --- Create table dynamically ---
+    if err := createTelemetryTable(session, tableName); err != nil {
+        log.Fatalf("[ERROR] Failed to create Cassandra table: %v", err)
+    }
+    log.Println("[DEBUG] Cassandra table ready")
+
+    // --- Kafka reader ---
     r := kafka.NewReader(kafka.ReaderConfig{
         Brokers:  kafkaBrokers,
         Topic:    kafkaTopic,
@@ -47,45 +143,11 @@ func main() {
         MaxBytes: 10e6,
     })
     defer r.Close()
-    log.Println("[DEBUG] Kafka reader configured")
-
-    // Cassandra session
-    cluster := gocql.NewCluster("localhost")
-    cluster.Keyspace = "telemetry"
-    cluster.Consistency = gocql.Quorum
-    cluster.Timeout = 5 * time.Second
-    log.Println("[DEBUG] Attempting Cassandra connection...")
-    session, err := cluster.CreateSession()
-    if err != nil {
-        log.Fatalf("[ERROR] Failed to connect to Cassandra: %v", err)
-    }
-    defer session.Close()
-    log.Println("[DEBUG] Cassandra session established")
-
-    // --- Pre-flight checks ---
-
-    // Kafka connectivity check
-    log.Println("[DEBUG] Checking Kafka broker connectivity...")
-    conn, err := kafka.Dial("tcp", kafkaBrokers[0])
-    if err != nil {
-        log.Printf("[WARNING] Cannot reach Kafka broker %s: %v", kafkaBrokers[0], err)
-    } else {
-        log.Printf("[DEBUG] Successfully connected to Kafka broker %s", kafkaBrokers[0])
-        conn.Close()
-    }
-
-    // Cassandra connectivity check
-    log.Println("[DEBUG] Checking Cassandra connectivity...")
-    if err := session.Query("SELECT release_version FROM system.local").Exec(); err != nil {
-        log.Printf("[WARNING] Cannot reach Cassandra: %v", err)
-    } else {
-        log.Println("[DEBUG] Cassandra connectivity OK")
-    }
 
     log.Println("[DEBUG] Kafka -> Cassandra pipeline started...")
 
+    // --- Main loop ---
     for {
-        log.Println("[DEBUG] Waiting for Kafka message...")
         msg, err := r.ReadMessage(ctx)
         if err != nil {
             log.Println("[ERROR] Error reading Kafka message:", err)
@@ -101,14 +163,15 @@ func main() {
         log.Printf("[DEBUG] Unmarshalled %d telemetry records", len(records))
 
         for _, rec := range records {
-            log.Printf("[DEBUG] Inserting record: vehicle_id=%s, session_id=%s, timestamp=%f, channel_id=%d", rec.VehicleID, rec.SessionID, rec.Timestamp, rec.ChannelID)
-            if err := session.Query(`
-                INSERT INTO telemetry_full (
+            insertQuery := fmt.Sprintf(`
+                INSERT INTO %s (
                     vehicle_id, session_id, timestamp, channel_id, channel_name,
                     channel_value, channel_unit, channel_min_value, channel_max_value,
                     channel_multiplier, channel_group, channel_count, expected_frequency,
                     actual_frequency, update_interval, frequency_label, semantic
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, tableName)
+
+            if err := session.Query(insertQuery,
                 rec.VehicleID, rec.SessionID, rec.Timestamp, rec.ChannelID,
                 rec.ChannelName, rec.ChannelValue, rec.ChannelUnit, rec.ChannelMinValue,
                 rec.ChannelMaxValue, rec.ChannelMultiplier, rec.ChannelGroup, rec.ChannelCount,
@@ -118,7 +181,6 @@ func main() {
                 log.Println("[ERROR] Cassandra insert error:", err)
             }
         }
-
         log.Printf("[DEBUG] Processed %d records", len(records))
     }
 }
