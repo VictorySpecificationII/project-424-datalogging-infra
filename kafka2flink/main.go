@@ -14,23 +14,23 @@ import (
 )
 
 type TelemetryRecord struct {
-    VehicleID         string  `json:"vehicleId"`
-    SessionID         string  `json:"sessionId"`
-    Timestamp         float64 `json:"timestamp"`
-    ChannelID         int     `json:"channelId"`
-    ChannelName       string  `json:"channelName"`
-    ChannelValue      float64 `json:"channelValue"`
-    ChannelUnit       string  `json:"channelUnit"`
-    ChannelMinValue   string  `json:"channelMinValue"`
-    ChannelMaxValue   string  `json:"channelMaxValue"`
-    ChannelMultiplier float64 `json:"channelMultiplier"`
-    ChannelGroup      string  `json:"channelGroup"`
-    ChannelCount      int     `json:"channelCount"`
-    ExpectedFrequency string  `json:"expectedFrequency"`
-    ActualFrequency   float64 `json:"actualFrequency"`
-    UpdateInterval    int     `json:"updateInterval"`
-    FrequencyLabel    string  `json:"frequencyLabel"`
-    Semantic          string  `json:"semantic"`
+    VehicleID         string      `json:"vehicleId"`
+    SessionID         string      `json:"sessionId"`
+    Timestamp         json.Number `json:"timestamp"`
+    ChannelID         int         `json:"channelId"`
+    ChannelName       string      `json:"channelName"`
+    ChannelValue      json.Number `json:"channelValue"`
+    ChannelUnit       string      `json:"channelUnit"`
+    ChannelMinValue   string      `json:"channelMinValue"`
+    ChannelMaxValue   string      `json:"channelMaxValue"`
+    ChannelMultiplier json.Number `json:"channelMultiplier"`
+    ChannelGroup      string      `json:"channelGroup"`
+    ChannelCount      int         `json:"channelCount"`
+    ExpectedFrequency string      `json:"expectedFrequency"`
+    ActualFrequency   json.Number `json:"actualFrequency"`
+    UpdateInterval    int         `json:"updateInterval"`
+    FrequencyLabel    string      `json:"frequencyLabel"`
+    Semantic          string      `json:"semantic"`
 }
 
 func sanitizeTableName(topic string) string {
@@ -101,7 +101,6 @@ func main() {
     log.Println("[DEBUG] Starting Kafka -> Cassandra telemetry consumer")
 
     ctx := context.Background()
-
     kafkaBrokers := []string{"localhost:9092"}
     kafkaTopicPrefix := "p424-telemetry-batch-"
 
@@ -140,8 +139,7 @@ func main() {
     log.Printf("[DEBUG] Keyspace '%s' is ready", keyspace)
 
     // --- Reconnect using the keyspace ---
-    session.Close() // close previous session
-
+    session.Close()
     cluster.Keyspace = keyspace
     session, err = cluster.CreateSession()
     if err != nil {
@@ -185,6 +183,12 @@ func main() {
         log.Printf("[DEBUG] Unmarshalled %d telemetry records", len(records))
 
         for _, rec := range records {
+            // Convert json.Number to float64
+            timestamp, _ := rec.Timestamp.Float64()
+            channelValue, _ := rec.ChannelValue.Float64()
+            multiplier, _ := rec.ChannelMultiplier.Float64()
+            actualFreq, _ := rec.ActualFrequency.Float64()
+
             insertQuery := fmt.Sprintf(`
                 INSERT INTO %s (
                     vehicle_id, session_id, timestamp, channel_id, channel_name,
@@ -194,10 +198,10 @@ func main() {
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, tableName)
 
             if err := session.Query(insertQuery,
-                rec.VehicleID, rec.SessionID, rec.Timestamp, rec.ChannelID,
-                rec.ChannelName, rec.ChannelValue, rec.ChannelUnit, rec.ChannelMinValue,
-                rec.ChannelMaxValue, rec.ChannelMultiplier, rec.ChannelGroup, rec.ChannelCount,
-                rec.ExpectedFrequency, rec.ActualFrequency, rec.UpdateInterval, rec.FrequencyLabel,
+                rec.VehicleID, rec.SessionID, timestamp, rec.ChannelID,
+                rec.ChannelName, channelValue, rec.ChannelUnit, rec.ChannelMinValue,
+                rec.ChannelMaxValue, multiplier, rec.ChannelGroup, rec.ChannelCount,
+                rec.ExpectedFrequency, actualFreq, rec.UpdateInterval, rec.FrequencyLabel,
                 rec.Semantic,
             ).Exec(); err != nil {
                 log.Println("[ERROR] Cassandra insert error:", err)
