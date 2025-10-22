@@ -115,9 +115,8 @@ func main() {
     tableName := sanitizeTableName(kafkaTopic)
     log.Printf("[DEBUG] Cassandra table will be: %s", tableName)
 
-    // --- Cassandra session ---
+    // --- Connect to cluster (no keyspace yet) ---
     cluster := gocql.NewCluster("localhost")
-    cluster.Keyspace = "telemetry"
     cluster.Consistency = gocql.Quorum
     cluster.Timeout = 5 * time.Second
 
@@ -126,7 +125,30 @@ func main() {
         log.Fatalf("[ERROR] Failed to connect to Cassandra: %v", err)
     }
     defer session.Close()
-    log.Println("[DEBUG] Cassandra session established")
+    log.Println("[DEBUG] Connected to Cassandra cluster (no keyspace yet)")
+
+    // --- Create keyspace if it doesn't exist ---
+    keyspace := "telemetry"
+    createKeyspaceCQL := fmt.Sprintf(`
+        CREATE KEYSPACE IF NOT EXISTS %s
+        WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+    `, keyspace)
+
+    if err := session.Query(createKeyspaceCQL).Exec(); err != nil {
+        log.Fatalf("[ERROR] Failed to create keyspace: %v", err)
+    }
+    log.Printf("[DEBUG] Keyspace '%s' is ready", keyspace)
+
+    // --- Reconnect using the keyspace ---
+    session.Close() // close previous session
+
+    cluster.Keyspace = keyspace
+    session, err = cluster.CreateSession()
+    if err != nil {
+        log.Fatalf("[ERROR] Failed to connect to Cassandra keyspace %s: %v", keyspace, err)
+    }
+    defer session.Close()
+    log.Println("[DEBUG] Cassandra session established with keyspace")
 
     // --- Create table dynamically ---
     if err := createTelemetryTable(session, tableName); err != nil {
