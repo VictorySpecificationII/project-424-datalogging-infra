@@ -103,6 +103,7 @@ func main() {
     ctx := context.Background()
     kafkaBrokers := []string{"localhost:9092"}
     kafkaTopicPrefix := "p424-telemetry-batch-"
+    topicCheckInterval := 5 * time.Second // adjustable interval
 
     // --- Get latest topic ---
     kafkaTopic, err := getLatestTopic(kafkaBrokers[0], kafkaTopicPrefix)
@@ -166,47 +167,80 @@ func main() {
 
     log.Println("[DEBUG] Kafka -> Cassandra pipeline started...")
 
+    ticker := time.NewTicker(topicCheckInterval)
+    defer ticker.Stop()
+
     // --- Main loop ---
     for {
-        msg, err := r.ReadMessage(ctx)
-        if err != nil {
-            log.Println("[ERROR] Error reading Kafka message:", err)
-            continue
-        }
-        log.Printf("[DEBUG] Received Kafka message (size=%d bytes)", len(msg.Value))
-
-        var records []TelemetryRecord
-        if err := json.Unmarshal(msg.Value, &records); err != nil {
-            log.Println("[ERROR] Failed to unmarshal JSON:", err)
-            continue
-        }
-        log.Printf("[DEBUG] Unmarshalled %d telemetry records", len(records))
-
-        for _, rec := range records {
-            // Convert json.Number to float64
-            timestamp, _ := rec.Timestamp.Float64()
-            channelValue, _ := rec.ChannelValue.Float64()
-            multiplier, _ := rec.ChannelMultiplier.Float64()
-            actualFreq, _ := rec.ActualFrequency.Float64()
-
-            insertQuery := fmt.Sprintf(`
-                INSERT INTO %s (
-                    vehicle_id, session_id, timestamp, channel_id, channel_name,
-                    channel_value, channel_unit, channel_min_value, channel_max_value,
-                    channel_multiplier, channel_group, channel_count, expected_frequency,
-                    actual_frequency, update_interval, frequency_label, semantic
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, tableName)
-
-            if err := session.Query(insertQuery,
-                rec.VehicleID, rec.SessionID, timestamp, rec.ChannelID,
-                rec.ChannelName, channelValue, rec.ChannelUnit, rec.ChannelMinValue,
-                rec.ChannelMaxValue, multiplier, rec.ChannelGroup, rec.ChannelCount,
-                rec.ExpectedFrequency, actualFreq, rec.UpdateInterval, rec.FrequencyLabel,
-                rec.Semantic,
-            ).Exec(); err != nil {
-                log.Println("[ERROR] Cassandra insert error:", err)
+        select {
+        case <-ticker.C:
+            // Check for new topic
+            latestTopic, err := getLatestTopic(kafkaBrokers[0], kafkaTopicPrefix)
+            if err != nil {
+                log.Println("[WARNING] Cannot find latest Kafka topic:", err)
+                continue
             }
+            if latestTopic != kafkaTopic {
+                log.Printf("[DEBUG] New topic detected: %s", latestTopic)
+
+                // Close old reader and create new one
+                r.Close()
+                kafkaTopic = latestTopic
+                tableName = sanitizeTableName(kafkaTopic)
+                if err := createTelemetryTable(session, tableName); err != nil {
+                    log.Fatalf("[ERROR] Failed to create Cassandra table: %v", err)
+                }
+                r = kafka.NewReader(kafka.ReaderConfig{
+                    Brokers:  kafkaBrokers,
+                    Topic:    kafkaTopic,
+                    GroupID:  "go-telemetry-consumer",
+                    MinBytes: 1,
+                    MaxBytes: 10e6,
+                })
+            }
+            log.Printf("[DEBUG] Topic interval check completed, current topic: %s", kafkaTopic)
+
+        default:
+            // Read messages from Kafka
+            msg, err := r.ReadMessage(ctx)
+            if err != nil {
+                log.Println("[ERROR] Error reading Kafka message:", err)
+                continue
+            }
+            log.Printf("[DEBUG] Received Kafka message (size=%d bytes)", len(msg.Value))
+
+            var records []TelemetryRecord
+            if err := json.Unmarshal(msg.Value, &records); err != nil {
+                log.Println("[ERROR] Failed to unmarshal JSON:", err)
+                continue
+            }
+            log.Printf("[DEBUG] Unmarshalled %d telemetry records", len(records))
+
+            for _, rec := range records {
+                timestamp, _ := rec.Timestamp.Float64()
+                channelValue, _ := rec.ChannelValue.Float64()
+                multiplier, _ := rec.ChannelMultiplier.Float64()
+                actualFreq, _ := rec.ActualFrequency.Float64()
+
+                insertQuery := fmt.Sprintf(`
+                    INSERT INTO %s (
+                        vehicle_id, session_id, timestamp, channel_id, channel_name,
+                        channel_value, channel_unit, channel_min_value, channel_max_value,
+                        channel_multiplier, channel_group, channel_count, expected_frequency,
+                        actual_frequency, update_interval, frequency_label, semantic
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, tableName)
+
+                if err := session.Query(insertQuery,
+                    rec.VehicleID, rec.SessionID, timestamp, rec.ChannelID,
+                    rec.ChannelName, channelValue, rec.ChannelUnit, rec.ChannelMinValue,
+                    rec.ChannelMaxValue, multiplier, rec.ChannelGroup, rec.ChannelCount,
+                    rec.ExpectedFrequency, actualFreq, rec.UpdateInterval, rec.FrequencyLabel,
+                    rec.Semantic,
+                ).Exec(); err != nil {
+                    log.Println("[ERROR] Cassandra insert error:", err)
+                }
+            }
+            log.Printf("[DEBUG] Processed %d records", len(records))
         }
-        log.Printf("[DEBUG] Processed %d records", len(records))
     }
 }
