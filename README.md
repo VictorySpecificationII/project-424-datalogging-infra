@@ -34,3 +34,6 @@ Once you have downloaded both stacks:
 Once you enter Unity and hit play, it will automatically start sending data to the Kafka instance. You'll be able to see them in the Kafka UI. You can then go ahead and write
 Flink jobs to grab from Kafka, transform, and send to Cassandra.
 
+## In Progress
+
+- [ ] Custom Go microservice that pulls data from Kafka, initializes tables in Cassandra and processes in real-time.
